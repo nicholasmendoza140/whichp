@@ -21,4 +21,19 @@ const argv = yargs(hideBin(process.argv))
     .help()
     .argv;
 
+exec(`lsof -i :${argv._[0]}`, (error, stdout, stderr) => {
+    if (error) {
+        if (error.code == 1) {
+            console.log(`No process is using port ${argv._[0]}`)
+            return
+        }
+        else {
+            console.error(`Error: ${error}`)
+            return
+        }     
+    }
+    console.log(`stdout: ${stdout}`)
+    console.error(`stderr: ${stderr}`)
+})
+
 console.log('Port: ' + argv._[0])
