@@ -21,6 +21,18 @@ const argv = yargs(hideBin(process.argv))
     .help()
     .argv;
 
+function parseOutput(output) {
+    const lines = output.split('\n')
+    const header = lines[0]
+    const pidHeader = header.split(/\s+/).filter(value => value == "PID").join(" ")
+
+    const values = lines[1]
+    const pidVal = values.split(/\s+/)
+    let text = []
+    text.push(pidHeader, pidVal[1])
+    return text
+}
+
 exec(`lsof -i :${argv._[0]}`, (error, stdout, stderr) => {
     if (error) {
         if (error.code == 1) {
@@ -32,8 +44,10 @@ exec(`lsof -i :${argv._[0]}`, (error, stdout, stderr) => {
             return
         }     
     }
-    console.log(`stdout: ${stdout}`)
-    console.error(`stderr: ${stderr}`)
+    
+    const parsedOutput = parseOutput(stdout)
+    console.log(parsedOutput[0])
+    console.log(parsedOutput[1])
 })
 
 console.log('Port: ' + argv._[0])
